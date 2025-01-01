@@ -30,11 +30,12 @@ const HeatmapLayer: React.FC<{ data: Array<[number, number, number]> }> = ({ dat
 
 
 const App = () => {
-  const [heatmapData, setHeatmapData] = useState<Array<[number, number, number]>>([
+  const [heatmapData] = useState<Array<[number, number, number]>>([
     [44.98, -93.26, 0.8],
     [44.97, -93.25, 0.5],
     [44.96, -93.24, 0.9],
   ]);
+  
 
   return (
     <MapContainer
