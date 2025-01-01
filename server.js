@@ -2,9 +2,11 @@ import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pkg from 'pg'; // Import the default export from pg
+import pkg from 'pg'; // PostgreSQL library
+import { OpenAI } from "openai";
 
-const { Pool } = pkg; // Destructure Pool from the default export
+const { Pool } = pkg; // Destructure Pool from pg
+
 const app = express();
 
 // Get __dirname in ES modules
@@ -14,9 +16,16 @@ const __dirname = path.dirname(__filename);
 // PostgreSQL connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // Required for Render PostgreSQL
+  ssl: { rejectUnauthorized: false },
 });
 
+// OpenAI configuration
+const openAI = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // Ensure this key is in your .env file
+});
+
+// Middleware to parse JSON request bodies
+app.use(express.json());
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -29,11 +38,36 @@ app.get('/api/hello', (req, res) => {
 // New API Route for test data
 app.get('/api/test', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM test_table'); // Query the test_table
-    res.json(result.rows); // Send the data as JSON
+    const result = await pool.query('SELECT * FROM test_table');
+    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error retrieving test data');
+  }
+});
+
+// New API Route for OpenAI GPT
+app.post('/api/gpt', async (req, res) => {
+  const { prompt } = req.body;
+
+  if (!prompt) {
+    return res.status(400).send('Prompt is required');
+  }
+
+  try {
+    const response = await openAI.chat.completions.create({
+      model: 'gpt-4o', // Correct model name
+      messages: [
+        { role: 'system', content: 'You are a helpful assistant.' },
+        { role: 'user', content: prompt },
+      ],
+      max_tokens: 50,
+    });
+
+    res.json({ response: response.choices[0].message.content.trim() });
+  } catch (err) {
+    console.error('Error with OpenAI API:', err.message);
+    res.status(500).send('Error processing GPT request');
   }
 });
 
