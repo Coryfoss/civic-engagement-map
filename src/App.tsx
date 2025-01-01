@@ -1,8 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet.heat';
 import 'leaflet/dist/leaflet.css';
+
+// Custom Heatmap Component
+const HeatmapLayer: React.FC<{ data: number[][] }> = ({ data }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (data.length > 0) {
+      const heatLayer = L.heatLayer(data, {
+        radius: 25,
+        blur: 15,
+        maxZoom: 17,
+      });
+      heatLayer.addTo(map);
+
+      // Cleanup on unmount
+      return () => {
+        map.removeLayer(heatLayer);
+      };
+    }
+  }, [data, map]);
+
+  return null;
+};
 
 const App: React.FC = () => {
   const [heatmapData, setHeatmapData] = useState<number[][]>([]);
@@ -24,7 +47,7 @@ const App: React.FC = () => {
 
   return (
     <MapContainer
-      center={[44.9778, -93.2650]} // Center on Minneapolis
+      center={[44.9778, -93.265]} // Center on Minneapolis
       zoom={13}
       style={{ height: '100vh', width: '100%' }}
     >
@@ -32,8 +55,7 @@ const App: React.FC = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution="&copy; OpenStreetMap contributors"
       />
-      {heatmapData.length > 0 &&
-        L.heatLayer(heatmapData, { radius: 25, blur: 15, maxZoom: 17 }).addTo(window.mapInstance!)}
+      <HeatmapLayer data={heatmapData} />
     </MapContainer>
   );
 };
