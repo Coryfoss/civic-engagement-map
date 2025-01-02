@@ -4,6 +4,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import pkg from 'pg'; // PostgreSQL library
 import { OpenAI } from "openai";
+import cors from 'cors';
+
 
 const { Pool } = pkg; // Destructure Pool from pg
 
@@ -26,6 +28,8 @@ const openAI = new OpenAI({
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+//Using CORS
+app.use(cors()); // Enable CORS for all routes
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'dist')));
@@ -68,6 +72,18 @@ app.post('/api/gpt', async (req, res) => {
   } catch (err) {
     console.error('Error with OpenAI API:', err.message);
     res.status(500).send('Error processing GPT request');
+  }
+});
+app.get('/api/engagement-data', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT latitude, longitude, intensity FROM civic_engagement'
+    );
+    console.log('Query Result:', result.rows); // Log the query result
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error retrieving engagement data:', err);
+    res.status(500).json({ error: 'Error retrieving engagement data' });
   }
 });
 

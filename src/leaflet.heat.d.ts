@@ -11,4 +11,14 @@ declare module 'leaflet' {
     minOpacity?: number;
     gradient?: { [key: number]: string };
   }
+  // At the top of your file, after the other imports
+import 'leaflet.heat';
+declare module 'leaflet' {
+  namespace L {
+    function heatLayer(
+      latlngs: LatLngExpression[],
+      options?: any
+    ): any;
+  }
+}
 }
