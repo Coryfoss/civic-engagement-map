@@ -5,7 +5,6 @@ import './App.css';
 import 'leaflet/dist/leaflet.css';
 import L, { LatLngExpression } from 'leaflet';
 import axios from 'axios';
-import ErrorBoundary from './components/ErrorBoundary'; // Import ErrorBoundary
 
 // Custom Heatmap Component
 const HeatmapLayer: React.FC<{ data: Array<[number, number, number]> }> = ({ data }) => {
@@ -18,7 +17,6 @@ const HeatmapLayer: React.FC<{ data: Array<[number, number, number]> }> = ({ dat
         blur: 15,
         maxZoom: 17,
       });
-
       heatLayer.addTo(map);
 
       return () => {
@@ -59,19 +57,17 @@ const App = () => {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <MapContainer
-        center={[44.98, -93.26]}
-        zoom={13}
-        className="map-container" // Apply the CSS class
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; OpenStreetMap contributors"
-        />
-        {heatmapData && <HeatmapLayer data={heatmapData} />}
-      </MapContainer>
-    </ErrorBoundary>
+<MapContainer
+  center={[44.98, -93.26]}
+  zoom={13}
+  className="map-container" // Apply the CSS class
+>
+  <TileLayer
+    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    attribution="&copy; OpenStreetMap contributors"
+  />
+  {heatmapData && <HeatmapLayer data={heatmapData} />}
+</MapContainer>
   );
 };
 
