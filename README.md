@@ -44,3 +44,31 @@ This project, developed as of January 2nd, 2025, aims to provide a dynamic heatm
 2. Install dependencies:
 ```bash
 npm install
+```
+3. Set up environment variables:
+```bash
+VITE_API_URL=your_api_url
+VITE_OPENAI_KEY=your_openai_key
+VITE_PG_CONNECTION=your_postgres_connection_string
+```
+4. Start the development server:
+```bash
+npm run dev
+```
+## Database Schema
+- The PostgreSQL 16 database is structured to handle:
+
+## Demographic data
+- Engagement metrics
+- Geospatial information
+- Historical participation data
+
+## API Integration
+- The application is set up with:
+
+## REST endpoints for data retrieval
+- OpenAI integration endpoints (placeholder for future implementation)
+- Real-time data updating capabilities
+
+## Contributing
+This project is currently in development. The user interface components are placeholders for future implementation. 
