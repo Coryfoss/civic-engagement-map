@@ -76,3 +76,10 @@ body {
   top: 0;
   left: 0;
 }
+#root {
+  /* Remove or modify these properties */
+  max-width: 1280px;
+  margin: 0;  /* Changed from 0 auto */
+  padding: 0; /* Changed from 2rem */
+  text-align: center;
+}
