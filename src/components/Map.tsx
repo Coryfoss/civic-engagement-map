@@ -1,79 +1,72 @@
-// src/components/Map.tsx
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat';
 
-// Define interfaces
-interface HeatmapPoint {
-  lat: number;
-  lng: number;
-  intensity: number;
+// Define type for heatmap data points
+type HeatmapPoint = [number, number, number]; // [lat, lng, intensity]
+
+interface HeatmapLayerProps {
+  points: HeatmapPoint[];
+  options?: {
+    radius?: number;
+    blur?: number;
+    maxZoom?: number;
+    max?: number;
+    gradient?: {[key: string]: string};
+  };
 }
 
-interface MapProps {
-  center: [number, number];
-  zoom: number;
-}
-
-// HeatmapLayer component
-const HeatmapLayer: React.FC<{ points: HeatmapPoint[] }> = ({ points }) => {
+const HeatmapLayer: React.FC<HeatmapLayerProps> = ({ points, options = {} }) => {
   const map = useMap();
-
+  
   useEffect(() => {
     if (!points.length) return;
 
-    const heatData = points.map(point => [
-      point.lat,
-      point.lng,
-      point.intensity
-    ]);
-
-    const heatLayer = (L as any).heatLayer(heatData, {
+    const defaultOptions = {
       radius: 25,
       blur: 15,
-      maxZoom: 10,
+      maxZoom: 17,
       max: 1.0,
-      gradient: { 0.4: 'blue', 0.65: 'lime', 1: 'red' }
-    }).addTo(map);
+      gradient: { 0.4: '#3388ff', 0.6: '#78ff33', 0.8: '#ff3333' }
+    };
 
+    const heatLayer = L.heatLayer(points, {
+      ...defaultOptions,
+      ...options
+    });
+
+    heatLayer.addTo(map);
     return () => {
       map.removeLayer(heatLayer);
     };
-  }, [map, points]);
+  }, [map, points, options]);
 
   return null;
 };
 
-// Main Map component
-const Map: React.FC<MapProps> = ({ center, zoom }) => {
-  const [heatmapData, setHeatmapData] = useState<HeatmapPoint[]>([]);
-
-  useEffect(() => {
-    // Example data - replace with actual API call
-    const sampleData: HeatmapPoint[] = [
-      { lat: center[0] + 0.1, lng: center[1] + 0.1, intensity: 0.8 },
-      { lat: center[0] - 0.1, lng: center[1] - 0.1, intensity: 0.6 },
-      { lat: center[0], lng: center[1], intensity: 1.0 },
-    ];
-
-    setHeatmapData(sampleData);
-  }, [center]);
-
+const HeatMap: React.FC<{
+  center: [number, number];
+  zoom: number;
+  data: HeatmapPoint[];
+  className?: string;
+}> = ({ center, zoom, data, className = 'h-screen w-screen' }) => {
   return (
-    <MapContainer
-      center={center}
-      zoom={zoom}
-      style={{ height: '600px', width: '100%' }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <HeatmapLayer points={heatmapData} />
-    </MapContainer>
+    <div className={className}>
+      <MapContainer
+        center={center}
+        zoom={zoom}
+        className="h-full w-full"
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        />
+        <HeatmapLayer points={data} />
+      </MapContainer>
+    </div>
   );
 };
 
-export default Map;
+export default HeatMap;
