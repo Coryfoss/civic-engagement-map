@@ -8,6 +8,13 @@ import 'leaflet.heat';
 
 type HeatmapData = Array<[number, number, number]>;
 
+interface Category {
+  id: string;
+  label: string;
+  enabled: boolean;
+  color?: string;
+}
+
 const HeatmapLayer: React.FC<{ data: HeatmapData, radius: number, blur: number }> = ({ data, radius, blur }) => {
   const map = useMap();
   
@@ -43,8 +50,22 @@ const HeatmapLayer: React.FC<{ data: HeatmapData, radius: number, blur: number }
 
 const App = () => {
   const [heatmapData, setHeatmapData] = useState<Array<[number, number, number]>>([]);
-  const [radius, setRadius] = useState(80);  // Initial value set to 80
-  const [blur, setBlur] = useState(1);     // Initial value set to 1
+  const [radius, setRadius] = useState(80);
+  const [blur, setBlur] = useState(1);
+  const [prompt, setPrompt] = useState('');
+  const [categories, setCategories] = useState<Category[]>([
+    { id: 'unregistered', label: 'Unregistered Voters', enabled: true },
+    { id: 'immigration', label: 'Immigration Status', enabled: false },
+    { id: 'registered', label: 'Registered Voters', enabled: true },
+    { id: 'incarcerated', label: 'Previously Incarcerated', enabled: false },
+    { id: 'engagement', label: 'Political Engagement', enabled: true }
+  ]);
+
+  const toggleCategory = (categoryId: string) => {
+    setCategories(categories.map(cat => 
+      cat.id === categoryId ? { ...cat, enabled: !cat.enabled } : cat
+    ));
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,6 +88,65 @@ const App = () => {
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+      {/* Top Search Bar and Categories */}
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: 'rgba(255, 255, 255, 0.73)',
+        padding: '15px',
+        borderRadius: '8px',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+        zIndex: 1000,
+        width: '80%',
+        maxWidth: '800px'
+      }}>
+        <div style={{ marginBottom: '15px' }}>
+        <input
+      type="text"
+      placeholder="Ask about demographic patterns or engagement trends..."
+      value={prompt}
+      onChange={(e) => setPrompt(e.target.value)}
+      style={{
+        width: '90%',
+        padding: '12px',
+        borderRadius: '4px',
+        border: '1px solid rgba(255, 255, 255, 0.3)',
+        fontSize: '16px',
+        color: '#333',  // Dark text color
+        backgroundColor: 'white',
+        boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)'
+      }}
+    />
+        </div>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '10px',
+          justifyContent: 'center'
+        }}>
+          {categories.map(category => (
+            <button
+              key={category.id}
+              onClick={() => toggleCategory(category.id)}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '20px',
+                border: 'none',
+                background: category.enabled ? '#4a90e2' : '#e0e0e0',
+                color: category.enabled ? 'white' : '#666',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                fontSize: '14px'
+              }}
+            >
+              {category.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <MapContainer
         center={[44.98, -93.26]}
         zoom={13}
@@ -85,11 +165,12 @@ const App = () => {
         }
       </MapContainer>
       
+      {/* Left Side Controls */}
       <div style={{
         position: 'absolute',
         top: '100px',
         left: '20px',
-        background: 'white',
+        background: 'rgba(255, 255, 255, 0.73)',
         padding: '15px',
         borderRadius: '8px',
         boxShadow: '0 2px 6px rgba(0,0,0,0.3)',

@@ -1,50 +1,46 @@
-# React + TypeScript + Vite
+# Civic Engagement Map - Community Political Engagement Tool
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A data visualization tool designed to help engage minority populations for political participation and resource allocation. Live demo: [https://civic-engagement-map.onrender.com/](https://civic-engagement-map.onrender.com/)
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This project, developed as of January 2nd, 2025, aims to provide a dynamic heatmap visualization of community engagement data, focusing on metrics like voter registration, immigration status, and political participation. The tool is designed to help identify underserved communities and facilitate better resource allocation for political engagement initiatives.
 
-## Expanding the ESLint configuration
+## Technology Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Frontend
+- React 18.x with TypeScript
+- Vite for build tooling and development
+- Leaflet.js with react-leaflet for mapping
+- leaflet.heat for heatmap visualization
+- Axios for API communications
 
-- Configure the top-level `parserOptions` property like this:
+### Backend
+- PostgreSQL 16 for data storage
+- OpenAI integration ready for future NLP capabilities
+- Node.js/Express API endpoints
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Features
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+- Interactive heatmap visualization of engagement data
+- Adjustable visualization controls:
+  - Heat density control
+  - Heat spread control
+- Placeholder UI for future AI-powered query interface
+- Real-time data updates
+- Geospatial data rendering
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## Future Enhancements
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- Natural Language Processing integration via OpenAI for intuitive data querying
+- Multiple demographic layer toggles
+- Advanced filtering capabilities
+- Community engagement metrics
+- Resource allocation suggestions
+
+## Development Setup
+
+1. Clone the repository
+2. Install dependencies:
+```bash
+npm install
