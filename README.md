@@ -9,7 +9,7 @@ A data visualization tool designed to help engage minority populations for polit
 
 ## Overview
 
-This project aims to provide map-based analytics and visualization tools for enhancing minority population engagement with the Black Political Action group. The focus is on active political engagement through geographic visualization of demographic and political data.
+This project aims to provide map-based analytics and visualization tools for enhancing under represented population engagement with the Black Political Action group. The focus is on active political engagement through geographic visualization of demographic and political data.
 
 ## Core Features
 - Interactive district visualization
