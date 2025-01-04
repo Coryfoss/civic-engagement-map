@@ -1,0 +1,134 @@
+/* Base map container styles */
+.leaflet-container {
+    width: 100vw !important;
+    height: 100vh !important;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Ensure the map wrapper takes full space */
+  .map-container {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  /* Drawing controls */
+  .leaflet-draw {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+  }
+  
+  .leaflet-draw-toolbar {
+    margin-top: 0;
+  }
+  
+  /* Style the drawn polygons */
+  .leaflet-draw-guide-dash {
+    display: none;
+  }
+  
+  .leaflet-draw-tooltip {
+    background: rgba(54, 54, 54, 0.9);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #fff;
+    font: 12px/18px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    margin-left: 20px;
+    margin-top: -21px;
+    padding: 4px 8px;
+    position: absolute;
+    white-space: nowrap;
+    z-index: 6;
+  }
+  
+  /* Control panel styling */
+  .control-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  
+  /* Make controls full width on mobile */
+  @media (max-width: 768px) {
+    .control-panel select, 
+    .control-panel button {
+      width: 100%;
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .control-panel {
+      width: 85%;
+      max-width: none;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+  
+  /* Popup styling */
+  .leaflet-popup-content {
+    padding: 1rem;
+    max-width: 300px;
+  }
+  
+  @media (max-width: 768px) {
+    .leaflet-popup-content {
+      max-width: 250px;
+      font-size: 0.9rem;
+    }
+  }
+  
+  /* Override any container constraints */
+  #root {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Remove any unwanted margins/padding */
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  
+  /* Style the edit/delete controls */
+  .leaflet-draw-actions {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: 26px;
+    top: 0;
+    white-space: nowrap;
+  }
+  
+  .leaflet-draw-actions li {
+    display: inline-block;
+  }
+  
+  .leaflet-draw-actions a {
+    background-color: #919187;
+    border-left: 1px solid #AAA;
+    color: #FFF;
+    font: 11px/19px "Helvetica Neue", Arial, Helvetica, sans-serif;
+    line-height: 28px;
+    text-decoration: none;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 28px;
+  }

@@ -1,7 +1,7 @@
 #root {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  margin: 0;
+  padding: 0;
   text-align: center;
 }
 
@@ -48,7 +48,7 @@
 .p-4 { padding: 1rem; }
 .rounded-lg { border-radius: 0.5rem; }
 .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-/* styles.css */
+
 body {
   margin: 0;
   padding: 0;
@@ -63,12 +63,13 @@ body {
   height: 100%;
   width: 100%;
 }
-/* Add this to your CSS file */
+
 .map-container {
   height: 100vh;
   width: 100vw;
   position: relative;
 }
+
 .leaflet-map-container {
   height: 100vh;
   width: 100vw;
@@ -76,10 +77,58 @@ body {
   top: 0;
   left: 0;
 }
-#root {
-  /* Remove or modify these properties */
-  max-width: 1280px;
-  margin: 0;  /* Changed from 0 auto */
-  padding: 0; /* Changed from 2rem */
-  text-align: center;
+
+/* New Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Control panel adjustments */
+  .absolute.top-4.left-4 {
+    width: calc(100% - 2rem);
+    max-width: 400px;
+  }
+
+  select, button {
+    width: 100% !important;
+  }
+
+  /* Popup adjustments */
+  .leaflet-popup-content {
+    padding: 0.75rem;
+    max-width: 250px;
+    font-size: 0.9rem;
+  }
+
+  /* Adjust map controls spacing */
+  .leaflet-control-layers {
+    margin-top: 1rem !important;
+  }
+
+  .leaflet-control-scale {
+    margin: 0.5rem !important;
+  }
+}
+
+/* Desktop Specific Styles */
+@media (min-width: 769px) {
+  .leaflet-popup-content {
+    padding: 1rem;
+    max-width: 300px;
+  }
+
+  select {
+    min-width: 200px;
+  }
+}
+
+/* Enhanced Popup Styles */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.leaflet-popup-content h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+.leaflet-popup-content p {
+  margin: 0.25rem 0;
 }
