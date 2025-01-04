@@ -49,6 +49,3 @@ npm run dev
 
 ## Contributing
 See the project wiki for detailed contribution guidelines and documentation.
-
-## License
-[Your license information]
