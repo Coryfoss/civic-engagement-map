@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, GeoJSON, LayersControl, ScaleControl } from 'react-leaflet';
-import { Feature, Polygon, FeatureCollection, Geometry } from 'geojson';
+import { MapContainer, TileLayer, GeoJSON, LayersControl, ScaleControl, useMap } from 'react-leaflet';
+import { Feature, Polygon, MultiPolygon, FeatureCollection, Geometry } from 'geojson';
 import L, { StyleFunction } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+
+
+// Update the interface definitions
+interface DistrictFeature extends Feature<Polygon | MultiPolygon, DistrictProperties> {}
 
 interface DistrictProperties {
   DISTRICT: string;
   POPULATION: string;
   TURNOUT: string;
-  [key: string]: string | number | Record<string, number>;
   DEMOGRAPHICS: {
     WHITE: number;
     BLACK: number;
@@ -16,7 +20,20 @@ interface DistrictProperties {
     ASIAN: number;
     OTHER: number;
   };
+  [key: string]: string | number | Record<string, number>;
 }
+
+const ZoomHandler = ({ onZoomChange }: { onZoomChange: (zoom: number) => void }) => {
+  const map = useMap();
+  
+  useEffect(() => {
+    map.on('zoomend', () => {
+      onZoomChange(map.getZoom());
+    });
+  }, [map, onZoomChange]);
+  
+  return null;
+};
 
 const getDistrictColor = (district: string): string => {
   const colors: { [key: string]: string } = {
@@ -41,7 +58,8 @@ const toggleFullscreen = () => {
   }
 };
 
-const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
+
+const sampleDistrictData: FeatureCollection<Polygon | MultiPolygon, DistrictProperties> = {
   type: "FeatureCollection",
   features: [
     {
@@ -52,13 +70,7 @@ const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
         TURNOUT: "82",
         DEMOGRAPHICS: { WHITE: 80, BLACK: 5, HISPANIC: 7, ASIAN: 3, OTHER: 5 }
       },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [-96.45, 43.5], [-96.3, 44.0], [-94.0, 44.2],
-          [-92.3, 44.0], [-91.7, 43.6], [-96.45, 43.5]
-        ]]
-      }
+      geometry: { type: "Polygon", coordinates: [] }, // Placeholder
     },
     {
       type: "Feature",
@@ -68,13 +80,7 @@ const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
         TURNOUT: "78",
         DEMOGRAPHICS: { WHITE: 75, BLACK: 8, HISPANIC: 8, ASIAN: 5, OTHER: 4 }
       },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [-94.0, 44.2], [-94.2, 44.8], [-92.6, 44.9],
-          [-92.8, 44.3], [-94.0, 44.2]
-        ]]
-      }
+      geometry: { type: "Polygon", coordinates: [] }, // Placeholder
     },
     {
       type: "Feature",
@@ -84,13 +90,7 @@ const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
         TURNOUT: "85",
         DEMOGRAPHICS: { WHITE: 70, BLACK: 12, HISPANIC: 8, ASIAN: 7, OTHER: 3 }
       },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [-93.9, 44.7], [-93.9, 45.3], [-93.4, 45.2],
-          [-93.3, 44.9], [-93.9, 44.7]
-        ]]
-      }
+      geometry: { type: "Polygon", coordinates: [] }, // Placeholder
     },
     {
       type: "Feature",
@@ -100,13 +100,7 @@ const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
         TURNOUT: "80",
         DEMOGRAPHICS: { WHITE: 65, BLACK: 15, HISPANIC: 10, ASIAN: 8, OTHER: 2 }
       },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [-93.4, 44.8], [-93.3, 45.2], [-92.7, 45.1],
-          [-92.8, 44.7], [-93.4, 44.8]
-        ]]
-      }
+      geometry: { type: "Polygon", coordinates: [] }, // Placeholder
     },
     {
       type: "Feature",
@@ -116,13 +110,7 @@ const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
         TURNOUT: "88",
         DEMOGRAPHICS: { WHITE: 60, BLACK: 18, HISPANIC: 12, ASIAN: 7, OTHER: 3 }
       },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [-93.5, 44.9], [-93.5, 45.1], [-93.3, 45.0],
-          [-93.2, 44.9], [-93.5, 44.9]
-        ]]
-      }
+      geometry: { type: "Polygon", coordinates: [] }, // Placeholder
     },
     {
       type: "Feature",
@@ -132,13 +120,7 @@ const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
         TURNOUT: "79",
         DEMOGRAPHICS: { WHITE: 82, BLACK: 6, HISPANIC: 5, ASIAN: 4, OTHER: 3 }
       },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [-94.6, 45.1], [-94.6, 45.9], [-93.4, 45.8],
-          [-93.3, 45.2], [-94.6, 45.1]
-        ]]
-      }
+      geometry: { type: "Polygon", coordinates: [] }, // Placeholder
     },
     {
       type: "Feature",
@@ -148,13 +130,7 @@ const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
         TURNOUT: "77",
         DEMOGRAPHICS: { WHITE: 85, BLACK: 4, HISPANIC: 6, ASIAN: 2, OTHER: 3 }
       },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [-97.2, 44.8], [-97.0, 48.7], [-95.3, 48.6],
-          [-95.2, 44.8], [-97.2, 44.8]
-        ]]
-      }
+      geometry: { type: "Polygon", coordinates: [] }, // Placeholder
     },
     {
       type: "Feature",
@@ -164,22 +140,120 @@ const sampleDistrictData: FeatureCollection<Polygon, DistrictProperties> = {
         TURNOUT: "81",
         DEMOGRAPHICS: { WHITE: 89, BLACK: 2, HISPANIC: 3, ASIAN: 1, OTHER: 5 }
       },
-      geometry: {
-        type: "Polygon",
-        coordinates: [[
-          [-95.1, 46.3], [-95.0, 48.9], [-89.8, 48.8],
-          [-89.8, 46.4], [-95.1, 46.3]
-        ]]
-      }
+      geometry: { type: "Polygon", coordinates: [] }, // Placeholder
     }
   ]
 };
 
+
+
 const MinnesotaMap = () => {
-  const [districtData, setDistrictData] = useState<FeatureCollection<Polygon, DistrictProperties> | null>(null);
+  const [minnesotaOutline, setMinnesotaOutline] = useState(null);
+  const [districtData, setDistrictData] = useState<FeatureCollection<Polygon | MultiPolygon, DistrictProperties> | null>(null);
   const [selectedLayer, setSelectedLayer] = useState('turnout');
   const [timeframe, setTimeframe] = useState('2024');
   const [navVisible, setNavVisible] = useState(true);
+  const [mapZoom, setMapZoom] = useState(7);
+
+  
+  useEffect(() => {
+    const fetchMinnesotaOutline = async () => {
+      try {
+        const response = await fetch('/geojson/minnesotaOutline.geojson'); // Path to your GeoJSON file
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setMinnesotaOutline(data);
+      } catch (error) {
+        console.error('Error loading Minnesota outline:', error);
+      }
+    };
+    fetchMinnesotaOutline();
+  }, []);
+
+  const outlineStyle = {
+    color: 'black',
+    weight: 2,
+    //fillOpacity: 0.1,
+    //fillColor: 'lightblue'
+  };
+
+  const onEachFeature = (feature: any, layer: L.Layer) => {
+    if (feature.properties && feature.properties.name) {
+      layer.bindPopup(`<h3>${feature.properties.name}</h3>`);
+    }
+  };
+
+  useEffect(() => {
+    // Update the loadDistrictGeometries function with proper types
+const loadDistrictGeometries = async () => {
+  try {
+    const updatedFeatures = await Promise.all(
+      sampleDistrictData.features.map(async (feature) => {
+        const districtNumber = feature.properties.DISTRICT;
+        try {
+          const response = await fetch(`/geojson/mn-cd${districtNumber}-precincts.json`);
+          if (!response.ok) {
+            throw new Error(`Failed to load district ${districtNumber}: ${response.status}`);
+          }
+          const geometryData = await response.json();
+          
+          interface GeometryFeature {
+            geometry: {
+              type: string;
+              coordinates: number[][][] | number[][][][];
+              geometries?: Array<{
+                type: string;
+                coordinates: number[][][] | number[][][][];
+              }>;
+            };
+          }
+
+          const allPolygons = geometryData.features.reduce((acc: number[][][][], feat: GeometryFeature) => {
+            const geometry = feat.geometry;
+            if (geometry.type === 'Polygon') {
+              acc.push(geometry.coordinates as number[][][]);
+            } else if (geometry.type === 'MultiPolygon') {
+              acc.push(...(geometry.coordinates as number[][][][]));
+            } else if (geometry.type === 'GeometryCollection' && geometry.geometries) {
+              geometry.geometries.forEach(g => {
+                if (g.type === 'Polygon') {
+                  acc.push(g.coordinates as number[][][]);
+                } else if (g.type === 'MultiPolygon') {
+                  acc.push(...(g.coordinates as number[][][][]));
+                }
+              });
+            }
+            return acc;
+          }, []);
+
+          return {
+            ...feature,
+            geometry: {
+              type: 'MultiPolygon' as const,
+              coordinates: allPolygons
+            }
+          };
+        } catch (error) {
+          console.error(`Error processing district ${districtNumber}:`, error);
+          return feature;
+        }
+      })
+    );
+
+    setDistrictData({
+      type: "FeatureCollection",
+      features: updatedFeatures
+    });
+  } catch (error) {
+    console.error("Error loading district geometries:", error);
+  }
+};
+
+    loadDistrictGeometries();
+  }, []);
+
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -213,19 +287,42 @@ const MinnesotaMap = () => {
     }
   }, []);
 
-  const districtStyle: StyleFunction = (feature?: Feature<any>) => {
+  const districtStyle: StyleFunction = (feature?: Feature<Geometry, any>): L.PathOptions => {
     if (!feature?.properties) return {};
-    return {
+    
+    const isDistrictFeature = (feat: any): feat is DistrictFeature => {
+      return feat?.properties?.DISTRICT !== undefined;
+    };
+  
+    if (!isDistrictFeature(feature)) return {};
+
+    // Base style
+    const style = {
       fillColor: getDistrictColor(feature.properties.DISTRICT),
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.7
+      fillOpacity: 0.3,
+      className: 'district-boundary',
+    };
+  
+    // Add borders at higher zoom levels
+    if (mapZoom >= 11) {
+      return {
+        ...style,
+        weight: 0.25,
+        opacity: 1,
+        color: 'black',
+      };
+    }
+  
+    // No borders at lower zoom levels
+    return {
+      ...style,
+      weight: 0,
+      opacity: 0,
     };
   };
 
-  const onEachDistrict = (feature: Feature<Geometry, DistrictProperties>, layer: L.Layer) => {
+
+  const onEachDistrict = (feature: DistrictFeature, layer: L.Layer) => {
     layer.bindPopup(`
       <div class="p-4">
         <h3 class="text-lg font-bold">Congressional District ${feature.properties.DISTRICT}</h3>
@@ -246,13 +343,13 @@ const MinnesotaMap = () => {
       </div>
     `);
   };
+  
 
   return (
     <div className="map-container" style={{ width: '100vw', height: '100vh', position: 'relative', overflow: 'hidden' }}>
- 
-
-      {navVisible && (
-        <div className="nav-controls absolute top-4 left-4 z-50 bg-white p-4 rounded shadow-lg">
+    {/* Navigation controls */}
+    {navVisible && (
+      <div className="nav-controls absolute top-4 left-4 z-50 bg-white p-4 rounded shadow-lg">
           <select
             value={selectedLayer}
             onChange={(e) => setSelectedLayer(e.target.value)}
@@ -288,41 +385,59 @@ const MinnesotaMap = () => {
         </div>
       )}
 
-      <MapContainer 
-      center={[44.95, -93.25]} 
-      zoom={8} 
+<MapContainer 
+      center={[46.2, -94.2]}
+      zoom={7} 
       zoomControl={false}
-      style={{ height: '100%', width: '100%' }}>
+      minZoom={6}
+      maxZoom={15}
+      maxBounds={[
+        [43.4, -97.5],
+        [49.5, -89.0]
+      ]}
+      maxBoundsViscosity={1.0}
+      style={{ height: '100%', width: '100%' }}
+    ><ZoomHandler onZoomChange={setMapZoom} />
+      <LayersControl position="topleft">
+        <LayersControl.BaseLayer checked name="OpenStreetMap">
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution=""
+          />
+        </LayersControl.BaseLayer>
         
-       <LayersControl position="topleft">
-  <LayersControl.BaseLayer checked name="OpenStreetMap">
-    <TileLayer
-      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      attribution=""
-    />
-  </LayersControl.BaseLayer>
-  
-  {districtData && districtData.features.map(feature => (
-    <LayersControl.Overlay 
-      key={feature.properties.DISTRICT}
-      checked
-      name={`District ${feature.properties.DISTRICT}`}
-    >
-      <GeoJSON
-        data={{
-          type: "FeatureCollection" as const,
-          features: [feature]
-        } as FeatureCollection<Polygon, DistrictProperties>}
-        style={districtStyle}
-        onEachFeature={onEachDistrict}
-      />
-    </LayersControl.Overlay>
-  ))}
-</LayersControl>
-        <ScaleControl position="bottomleft" />
-      </MapContainer>
-    </div>
-  );
+        {/* Minnesota outline always visible */}
+        {minnesotaOutline && (
+          <GeoJSON
+            data={minnesotaOutline}
+            style={outlineStyle}
+            onEachFeature={onEachFeature}
+          />
+        )}
+        
+        {/* Districts as toggleable overlays */}
+        {districtData && districtData.features.map(feature => (
+          <LayersControl.Overlay 
+            key={feature.properties.DISTRICT}
+            checked
+            name={`District ${feature.properties.DISTRICT}`}
+          >
+            <GeoJSON
+              data={{
+                type: "FeatureCollection",
+                features: [feature]
+              } as FeatureCollection<Polygon | MultiPolygon, DistrictProperties>}
+              style={districtStyle}
+              onEachFeature={onEachDistrict}
+            />
+          </LayersControl.Overlay>
+        ))}
+      </LayersControl>
+      
+      <ScaleControl position="bottomleft" />
+    </MapContainer>
+  </div>
+);
 };
 
 export default MinnesotaMap;
