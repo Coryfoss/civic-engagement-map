@@ -175,8 +175,8 @@ const MinnesotaMap = () => {
   const outlineStyle = {
     color: 'black',
     weight: 2,
-    //fillOpacity: 0.1,
-    //fillColor: 'lightblue'
+    fillOpacity: 0,
+    fillColor: 'lightblue'
   };
 
   const onEachFeature = (feature: any, layer: L.Layer) => {
