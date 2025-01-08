@@ -52,13 +52,13 @@ const FilterControls = ({ districts = [], onToggleDistrict }: FilterControlsProp
         </Button>
         
         {isDistrictMenuOpen && (
-          <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg border border-gray-200">
-            <div className="p-2">
+          <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg border border-gray-200" >
+            <div style={{ position: 'absolute', zIndex: 1001, paddingLeft: '200px' }}>
               {districts.map(district => (
+                <div className="border-r " style={{ padding: '10px',  backgroundColor: 'rgba(0, 0, 0, 0.6)'}}> 
                 <label
                   key={district.id}
                   className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
-                  style={{ paddingRight: '4px' }}
                 >
                   <input
                     type="checkbox"
@@ -68,6 +68,7 @@ const FilterControls = ({ districts = [], onToggleDistrict }: FilterControlsProp
                   />
                   <span>District {district.id}</span>
                 </label>
+                </div>
               ))}
             </div>
           </div>

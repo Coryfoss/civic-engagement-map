@@ -316,11 +316,10 @@ const MinnesotaMap = () => {
       </MapContainer>
 
 {/* Left Side Controls */}
-<div style={{
+<div className="inline-flex bg-white/90 backdrop-blur-sm border border-gray-200 rounded-md shadow-sm" style={{
   position: 'absolute',
   width: '100vw',
-  zIndex: 1000,
-  overflowX: 'auto', whiteSpace: 'nowrap'
+  zIndex: 1000
 }}>
   <FilterControls 
     districts={DISTRICT_DATA.features.map(f => ({
