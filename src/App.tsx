@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, GeoJSON, LayersControl, ScaleControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, ScaleControl, useMap } from 'react-leaflet';
 import { Feature, Polygon, MultiPolygon, FeatureCollection } from 'geojson';
 import L, { StyleFunction } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import FilterControls from './components/filterControls';
+
 
 interface DistrictProperties {
   DISTRICT: string;
@@ -127,6 +129,9 @@ const MinnesotaMap = () => {
   const [minnesotaOutline, setMinnesotaOutline] = useState<FeatureCollection | null>(null);
   const [districtData, setDistrictData] = useState<FeatureCollection<Polygon | MultiPolygon, DistrictProperties> | null>(null);
   const [mapZoom, setMapZoom] = useState(7);
+  const [visibleDistricts, setVisibleDistricts] = useState<Set<string>>(
+    new Set(['1', '2', '3', '4', '5', '6', '7', '8'])
+  );
 
   // Add Leaflet styles
   useEffect(() => {
@@ -228,6 +233,18 @@ const MinnesotaMap = () => {
     };
   };
 
+  const handleToggleDistrict = (districtId: string) => {
+    setVisibleDistricts(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(districtId)) {
+        newSet.delete(districtId);
+      } else {
+        newSet.add(districtId);
+      }
+      return newSet;
+    });
+  };
+
   const onEachDistrict = (feature: Feature<Polygon | MultiPolygon, DistrictProperties>, layer: L.Layer) => {
     layer.bindPopup(`
       <div class="p-4">
@@ -248,62 +265,74 @@ const MinnesotaMap = () => {
     `);
   };
 
-  return (
-    <div style={{
-      width: '100vw',
-      height: '100vh',
-      position: 'relative',
-    }}>
-      <MapContainer
-        center={[46.2, -94.2]}
-        zoom={7}
-        zoomControl={false}
-        minZoom={6}
-        maxZoom={15}
-        maxBounds={[[43.4, -97.5], [49.5, -89.0]]}
-        maxBoundsViscosity={1.0}
-        style={{ 
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0
-        }}
-      >
-        <ZoomHandler onZoomChange={setMapZoom} />
-        <LayersControl position="topleft">
-          <LayersControl.BaseLayer checked name="OpenStreetMap">
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          </LayersControl.BaseLayer>
+ 
+ return (
+  <div style={{
+    width: '100vw',
+    height: '100vh',
+    position: 'relative',
+  }}>
+    <MapContainer
+      center={[46.2, -94.2]}
+      zoom={7}
+      zoomControl={false}
+      minZoom={6}
+      maxZoom={15}
+      maxBounds={[[43.4, -97.5], [49.5, -89.0]]}
+      maxBoundsViscosity={1.0}
+      style={{ 
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0
+      }}
+    >
+      <ZoomHandler onZoomChange={setMapZoom} />
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          {minnesotaOutline && (
-            <GeoJSON
-              data={minnesotaOutline}
-              style={{ color: 'black', weight: 2, fillOpacity: 0 }}
-            />
-          )}
+      {minnesotaOutline && (
+        <GeoJSON
+          data={minnesotaOutline}
+          style={{ color: 'black', weight: 2, fillOpacity: 0 }}
+        />
+      )}
 
-{districtData?.features.map(feature => (
-            <LayersControl.Overlay
-              key={feature.properties.DISTRICT}
-              checked
-              name={`District ${feature.properties.DISTRICT}`}
-            >
-              <GeoJSON
-                data={{
-                  type: "FeatureCollection",
-                  features: [feature]
-                } as FeatureCollection<Polygon | MultiPolygon, DistrictProperties>}
-                style={districtStyle}
-                onEachFeature={onEachDistrict}
-              />
-            </LayersControl.Overlay>
-          ))}
-        </LayersControl>
-        <ScaleControl position="bottomleft" />
+      {districtData?.features
+        .filter(feature => visibleDistricts.has(feature.properties.DISTRICT))
+        .map(feature => (
+          <GeoJSON
+            key={feature.properties.DISTRICT}
+            data={{
+              type: "FeatureCollection",
+              features: [feature]
+            } as FeatureCollection<Polygon | MultiPolygon, DistrictProperties>}
+            style={districtStyle}
+            onEachFeature={onEachDistrict}
+          />
+        ))}
+      
+      <ScaleControl position="bottomleft" />
       </MapContainer>
-    </div>
-  );
+
+{/* Left Side Controls */}
+<div style={{
+  position: 'absolute',
+  width: '100vw',
+  zIndex: 1000,
+  overflowX: 'auto', whiteSpace: 'nowrap'
+}}>
+  <FilterControls 
+    districts={DISTRICT_DATA.features.map(f => ({
+      id: f.properties.DISTRICT,
+      name: `District ${f.properties.DISTRICT}`,
+      visible: visibleDistricts.has(f.properties.DISTRICT)
+    }))}
+    onToggleDistrict={handleToggleDistrict}
+  />
+</div>
+  </div>
+);
 };
 
 export default MinnesotaMap;
