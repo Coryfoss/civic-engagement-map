@@ -274,9 +274,9 @@ const MinnesotaMap = () => {
   }}>
     <MapContainer
       center={[46.2, -94.2]}
-      zoom={7}
+      zoom={6}
       zoomControl={false}
-      minZoom={7}
+      minZoom={6}
       maxZoom={15}
       maxBounds={[[43.4, -97.5], [49.5, -89.0]]}
       maxBoundsViscosity={1.0}
